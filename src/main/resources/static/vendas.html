@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sistema | Genesis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+  <div id="alertArea" class="alert d-none" role="alert"></div>
+
+  <h2 class="text-center text-primary mb-4">Genesis — Sistema</h2>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+    <div class="container">
+      <a class="navbar-brand text-primary" href="sistema.html">Genesis</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuSistema">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="menuSistema">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a id="linkProdutos" class="nav-link" href="#">Produtos</a></li>
+          <li class="nav-item"><a id="linkVendas" class="nav-link" href="#">Vendas</a></li>
+          <li class="nav-item"><a id="linkFuncionarios" class="nav-link" href="#">Funcionários</a></li>
+          <li class="nav-item"><a id="btnLogout" class="nav-link text-danger" href="#">Sair</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 📦 Seção de Produtos -->
+  <section id="produtoSection" style="display: none;">
+    <h4 class="text-primary mb-3">Cadastro de Produtos</h4>
+
+    <div class="card p-3 shadow-sm mb-4">
+      <div class="row g-2">
+        <div class="col-md-3">
+          <input type="text" id="filtroCodigo" class="form-control" placeholder="Buscar por código" />
+        </div>
+        <div class="col-md-3">
+          <input type="text" id="filtroNome" class="form-control" placeholder="Buscar por nome" />
+        </div>
+        <div class="col-md-3">
+          <select id="filtroCategoria" class="form-select">
+            <option value="">Filtrar por categoria</option>
+            <option value="balão">Balão</option>
+            <option value="kit">Kit</option>
+            <option value="doces">Doces</option>
+          </select>
+        </div>
+        <div class="col-md-3 d-grid gap-2">
+          <button class="btn btn-outline-primary" id="btnBuscarCodigo">🔍 Buscar Código</button>
+          <button class="btn btn-outline-primary" id="btnBuscarNome">🔍 Buscar</button>
+          <button class="btn btn-outline-secondary" id="btnBuscarCategoria">📁 Categoria</button>
+          <button class="btn btn-outline-success" id="btnMostrarKits">🎯 Ver Kits</button>
+          <button class="btn btn-outline-dark" id="btnTodosProdutos">↻ Todos</button>
+        </div>
+      </div>
+    </div>
+
+    <form id="formProduto" class="card p-3 shadow-sm mb-4">
+      <input type="number" id="produtoIdCadastro" placeholder="Código do Produto" class="form-control mb-2" required />
+      <input type="text" id="produtoNome" placeholder="Nome" class="form-control mb-2" required />
+      <input type="text" id="produtoDescricao" placeholder="Descrição" class="form-control mb-2" required />
+      <input type="number" id="produtoPreco" placeholder="Preço (R$)" class="form-control mb-2" required />
+      <input type="number" id="produtoEstoque" placeholder="Estoque" class="form-control mb-2" required />
+      <input type="text" id="produtoCategoria" placeholder="Categoria (ex: kit, balão, doces)" class="form-control mb-2" />
+      <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="produtoKit" />
+        <label class="form-check-label" for="produtoKit">Faz parte de um kit?</label>
+      </div>
+      <button type="submit" class="btn btn-success w-100">Cadastrar Produto</button>
+    </form>
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped shadow-sm">
+        <thead class="table-light">
+        <tr>
+          <th>Código do Produto</th>
+          <th>Nome</th>
+          <th>Descrição</th>
+          <th>Preço</th>
+          <th>Estoque</th>
+          <th>Categoria</th>
+          <th>Kit</th>
+          <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody id="listaProdutos"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 💰 Seção de Vendas -->
+  <section id="vendaSection" style="display: none;">
+    <h4 class="text-success mb-3">Registrar Venda</h4>
+
+    <form id="formVenda" class="card p-4 shadow-sm mb-4">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label for="produtoId" class="form-label">Código do Produto</label>
+          <input type="text" id="produtoId" class="form-control" required />
+        </div>
+        <div class="col-md-3">
+          <label for="vendaNome" class="form-label">Nome</label>
+          <input type="text" id="vendaNome" class="form-control" disabled />
+        </div>
+        <div class="col-md-2">
+          <label for="vendaPreco" class="form-label">Valor Unitário</label>
+          <input type="text" id="vendaPreco" class="form-control" disabled />
+        </div>
+        <div class="col-md-2">
+          <label for="quantidade" class="form-label">Quantidade</label>
+          <input type="number" id="quantidade" class="form-control" required />
+        </div>
+        <div class="col-md-2">
+          <label for="totalItem" class="form-label">Total do Item</label>
+          <input type="text" id="totalItem" class="form-control" disabled />
+        </div>
+      </div>
+
+      <div class="row mt-3 g-3">
+        <div class="col-md-4">
+          <label for="vendaDescricao" class="form-label">Descrição</label>
+          <input type="text" id="vendaDescricao" class="form-control" disabled />
+        </div>
+        <div class="col-md-4">
+          <label for="vendaCategoria" class="form-label">Categoria</label>
+          <input type="text" id="vendaCategoria" class="form-control" disabled />
+        </div>
+        <div class="col-md-4">
+          <label for="vendaKit" class="form-label">É Kit?</label>
+          <input type="text" id="vendaKit" class="form-control" disabled />
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-success mt-4 w-100">Adicionar Item</button>
+    </form>
+
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th>Produto</th>
+        <th>Qtd</th>
+        <th>Valor Unitário</th>
+        <th>Total</th>
+      </tr>
+      </thead>
+      <tbody id="tabelaItens"></tbody>
+    </table>
+
+    <div class="text-end mb-3">
+      <strong>Valor Total: R$ <span id="totalVenda">0.00</span></strong>
+    </div>
+
+    <button id="finalizarVenda" class="btn btn-primary mt-3 w-100">Finalizar Venda</button>
+  </section>
+
+  <!-- 👷 Seção de Funcionários -->
+  <section id="funcionarioSection" style="display: none;">
+    <h4 class="text-warning mb-3">Cadastro de Funcionários</h4>
+    <form id="formFuncionario" class="card p-3 shadow-sm mb-4">
+      <input type="text" id="nomeFunc" placeholder="Nome do Funcionário" class="form-control mb-2" required />
+      <input type="text" id="cargo" placeholder="Cargo" class="form-control mb-2" required />
+      <input type="text" id="usernameFunc" placeholder="Usuário (opcional)" class="form-control mb-2" />
+      <input type="password" id="passwordFunc" placeholder="Senha (opcional)" class="form-control mb-2" />
+      <button type="submit" class="btn btn-warning w-100">Cadastrar Funcionário</button>
+    </form>
+
+    <table class="table table-bordered" id="listaFuncionarios"></table>
+  </section>
+</div>
+
+<script type="module" src="./js/main.js"></script>
+<script src="./js/funcionarios.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
