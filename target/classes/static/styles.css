@@ -1,0 +1,323 @@
+/* ---------------------------------------------
+   🎨 Estilo Base
+---------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #fff8e1;
+  margin: 0;
+  padding: 0;
+  color: #6b4e00;
+}
+
+.container-lg {
+  max-width: 1200px;
+  padding: 0.5rem 1rem;
+  margin: 0 auto;
+}
+
+h2, h3, h4 {
+  color: #6b4e00;
+  margin-bottom: 0.5rem;
+}
+
+/* ---------------------------------------------
+   🔎 Filtro e botões de busca
+---------------------------------------------- */
+.filtro-container {
+  max-width: 900px;
+  margin: 0.5rem auto;
+  padding: 0.25rem 0.5rem;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.filtro-container .filtro-left {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: nowrap;
+  flex-grow: 1;
+  min-width: 250px;
+  align-items: center;
+}
+
+.filtro-container input[type="text"],
+.filtro-container select {
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  border: 1px solid #d6ba6c;
+  width: 180px;
+  box-sizing: border-box;
+}
+
+.filtro-container button.buscar-btn {
+  padding: 6px 10px;
+  border-radius: 4px;
+  border: 1px solid #2196f3;
+  background-color: white;
+  color: #2196f3;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease;
+}
+
+.filtro-container button.buscar-btn:hover {
+  background-color: #2196f3;
+  color: white;
+}
+
+.filtro-container .filtro-right {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 150px;
+}
+
+.filtro-container .filtro-right button {
+  padding: 6px 10px;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  border: 1px solid #d6ba6c;
+  background-color: white;
+  color: #6b4e00;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s ease;
+}
+
+.filtro-container .filtro-right button:hover {
+  background-color: #fff2b8;
+  border-color: #ffca28;
+}
+
+.filtro-container .filtro-right .btn-ver-kits {
+  border: 1px solid #4caf50;
+  color: #4caf50;
+}
+
+.filtro-container .filtro-right .btn-ver-kits:hover {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* ---------------------------------------------
+   🧾 Formulários
+---------------------------------------------- */
+form.card {
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 0.5rem;
+  max-width: 100%;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  font-size: 1rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  background-color: white;
+}
+
+form#formProduto.card {
+  margin: 0.5rem auto;
+  padding: 1rem !important;
+  border-radius: 8px;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
+  background-color: white;
+}
+
+/* 📐 Grade do formulário */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.25rem;
+  align-items: end;
+  margin-bottom: 0.25rem;
+}
+
+.form-grid .col-span {
+  grid-column: span 2;
+}
+
+form.card label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  display: block;
+  color: #6b4e00;
+}
+
+form.card input:not([type="checkbox"]),
+form.card textarea,
+form.card select {
+  padding: 8px 10px;
+  border: 1px solid #d6ba6c;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+form.card input:focus,
+form.card textarea:focus,
+form.card select:focus {
+  border-color: #ffca28;
+  box-shadow: 0 0 4px rgba(255, 202, 40, 0.6);
+  outline: none;
+}
+
+/* Checkbox alinhado com label */
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+  grid-column: span 2;
+}
+
+.form-check-input {
+  width: 1.2em;
+  height: 1.2em;
+  border: 1px solid #d6ba6c;
+  border-radius: 4px;
+  accent-color: #ffca28;
+  cursor: pointer;
+}
+
+.form-check-label {
+  font-weight: 600;
+  color: #6b4e00;
+  cursor: pointer;
+  margin-bottom: 0;
+}
+
+/* Botão de submissão */
+form.card button {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  background-color: #ffca28;
+  color: #333;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid #d6ba6c;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 0.25rem;
+  width: 100%;
+}
+
+form.card button:hover {
+  background-color: #f4b400;
+}
+
+/* ---------------------------------------------
+   📊 Tabela com cabeçalho fixo
+---------------------------------------------- */
+.table-responsive {
+  max-height: 450px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  background-color: white;
+}
+
+.table-responsive table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.table-responsive thead th {
+  position: sticky;
+  top: 0;
+  background-color: #fff8e1;
+  color: #6b4e00;
+  font-weight: bold;
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+
+.table-responsive td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #eee;
+  text-align: center;
+}
+
+/* Botões da tabela */
+.btn-editar {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 4px;
+}
+
+.btn-excluir {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.btn-editar:hover {
+  background-color: #1976d2;
+}
+
+.btn-excluir:hover {
+  background-color: #d32f2f;
+}
+
+/* Botões lado a lado */
+.acoes-btns {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ---------------------------------------------
+   📱 Responsividade
+---------------------------------------------- */
+@media (max-width: 700px) {
+  .filtro-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filtro-container .filtro-left,
+  .filtro-container .filtro-right {
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .filtro-container input[type="text"],
+  .filtro-container select,
+  .filtro-container button.buscar-btn {
+    margin-bottom: 0.25rem;
+  }
+}
