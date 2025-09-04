@@ -48,6 +48,7 @@ public class ClienteService {
 
         return clienteRepository.save(cliente);
     }
+
     public Cliente buscarPorId(Long id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado"));
@@ -74,15 +75,20 @@ public class ClienteService {
     }
 
     // ✅ Novo método flexível
-    public List<Cliente> buscarPorFiltros(String nome, String cep) {
-        if (nome != null && !nome.isEmpty() && cep != null && !cep.isEmpty()) {
-            return clienteRepository.findByNomeContainingIgnoreCaseAndCep(nome, cep);
-        } else if (nome != null && !nome.isEmpty()) {
-            return clienteRepository.findByNomeContainingIgnoreCase(nome);
-        } else if (cep != null && !cep.isEmpty()) {
-            return clienteRepository.findByCep(cep);
+    public List<Cliente> buscarPorQuery(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return listarTodos();
+        }
+
+        String valorLimpo = query.trim().replaceAll("[^\\d]", ""); // remove traços, espaços etc.
+
+        // Se sobrar só números e tiver entre 5 e 8 dígitos, tratamos como CEP
+        boolean isCep = valorLimpo.length() >= 5 && valorLimpo.length() <= 8;
+
+        if (isCep) {
+            return clienteRepository.findByCep(valorLimpo);
         } else {
-            return listarTodos(); // ou retornar lista vazia
+            return clienteRepository.findByNomeContainingIgnoreCase(query.trim());
         }
     }
 }

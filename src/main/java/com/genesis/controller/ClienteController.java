@@ -38,6 +38,7 @@ public class ClienteController {
         clienteService.excluir(id);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> buscarPorId(@PathVariable Long id) {
         Cliente cliente = clienteService.buscarPorId(id);
@@ -46,10 +47,9 @@ public class ClienteController {
 
     // 🔍 Endpoint flexível para busca por nome e/ou cep
     @GetMapping("/buscar")
-    public List<Cliente> buscarPorFiltros(
-            @RequestParam(required = false) String nome,
-            @RequestParam(required = false) String cep
-    ) {
-        return clienteService.buscarPorFiltros(nome, cep);
+    public List<Cliente> buscar(@RequestParam String query) {
+        return clienteService.buscarPorQuery(query);
     }
+
+
 }
