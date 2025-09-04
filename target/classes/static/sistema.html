@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <title>Sistema | Genesis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- CSS customizado -->
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-light">
+
+<div class="container-lg mt-5">
+
+    <div id="alertArea" class="alert d-none" role="alert" aria-live="polite"></div>
+
+    <h2 class="text-center text-primary mb-4"> Genesis — Sistema</h2>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4 rounded">
+        <div class="container">
+            <a class="navbar-brand text-primary fw-bold" href="sistema.html">Genesis</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuSistema" aria-controls="menuSistema" aria-expanded="false" aria-label="Alternar navegação">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="menuSistema">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a id="linkProdutos" class="nav-link" href="#">Produtos</a></li>
+                    <li class="nav-item"><a id="linkVendas" class="nav-link" href="#">Vendas</a></li>
+                    <li class="nav-item"><a id="linkClientes" class="nav-link" href="#">Clientes</a></li>
+                    <li class="nav-item"><a id="linkFuncionarios" class="nav-link" href="#">Funcionários</a></li>
+                    <li class="nav-item"><a id="btnLogout" class="nav-link text-danger" href="#">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Seção Produtos -->
+    <section id="produtoSection" style="display: none;">
+        <h4 class="text-primary mb-3">Cadastro de Produtos</h4>
+
+        <div class="card p-3 shadow-sm mb-4 rounded">
+            <div class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <input type="text" id="filtroCodigoNome" class="form-control" placeholder="Código ou nome" autocomplete="off" aria-label="Código ou nome"/>
+                </div>
+                <div class="col-md-2 d-grid gap-2">
+                    <button class="btn btn-outline-primary" id="btnBuscarCodigoNome" type="button" aria-label="Buscar por código ou nome">🔍 Buscar</button>
+                </div>
+                <div class="col-md-3">
+                    <select id="filtroCategoria" class="form-select" aria-label="Filtrar por categoria">
+                        <option value="">Filtrar por categoria</option>
+                        <option value="balão">Balão</option>
+                        <option value="kit">Kit</option>
+                        <option value="doces">Doces</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-grid gap-2">
+                    <button class="btn btn-outline-secondary" id="btnBuscarCategoria" type="button" aria-label="Buscar por categoria">📁 Categoria</button>
+                    <button class="btn btn-outline-success" id="btnMostrarKits" type="button" aria-label="Mostrar apenas kits">🎯 Ver Kits</button>
+                    <button class="btn btn-outline-dark" id="btnTodosProdutos" type="button" aria-label="Mostrar todos os produtos">↻ Todos</button>
+                </div>
+            </div>
+        </div>
+        <form id="formProduto" class="card p-3 shadow-sm mb-4 rounded" novalidate>
+            <div class="row g-3 mb-3">
+                <div class="col-12 col-md-3">
+                    <label for="produtoIdCadastro" class="form-label">Código do Produto</label>
+                    <input type="text" id="produtoIdCadastro" class="form-control" required autocomplete="off" pattern="\S+" title="Código não pode ser vazio" aria-describedby="helpCodigoProduto"/>
+                    <div id="helpCodigoProduto" class="form-text">Não pode ser vazio</div>
+                </div>
+                <div class="col-12 col-md-9">
+                    <label for="produtoNome" class="form-label">Nome do Produto</label>
+                    <input type="text" id="produtoNome" class="form-control" required autocomplete="off" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="produtoDescricao" class="form-label">Descrição</label>
+                <textarea id="produtoDescricao" class="form-control" rows="1" required></textarea>
+            </div>
+
+            <div class="row g-3">
+                <div class="col-12 col-md-6">
+                    <label for="produtoPreco" class="form-label">Preço (R$)</label>
+                    <input type="number" step="0.01" min="0" id="produtoPreco" class="form-control" required />
+                </div>
+                <div class="col-12 col-md-6">
+                    <label for="produtoEstoque" class="form-label">Estoque</label>
+                    <input type="number" min="0" id="produtoEstoque" class="form-control" required />
+                </div>
+            </div>
+
+            <div class="row g-3 mt-2">
+                <div class="col-12 col-md-6">
+                    <label for="produtoCategoria" class="form-label">Categoria</label>
+                    <input type="text" id="produtoCategoria" class="form-control" placeholder="Ex: categoria" autocomplete="off" />
+                </div>
+                <div class="col-12 col-md-6 d-flex align-items-center">
+                    <div class="form-check mt-2">
+                        <input class="form-check-input" type="checkbox" id="produtoKit" />
+                        <label class="form-check-label" for="produtoKit">Faz parte de um kit?</label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100 mt-3" aria-label="Cadastrar Produto">Cadastrar Produto</button>
+            <button type="button" id="btnLimparProduto" class="btn btn-outline-secondary w-100 mt-2" aria-label="Limpar formulário">🧹 Limpar</button>
+
+        </form>
+
+
+        <div class="table-responsive tabela-fixa" aria-label="Lista de produtos" style="max-height: 300px; overflow-y: auto;">
+            <table class="table table-bordered table-striped shadow-sm mb-0">
+                <thead class="table-light">
+                <tr>
+                    <th scope="col">Código do Produto</th>
+                    <th scope="col">Nome</th>
+                    <th scope="col">Descrição</th>
+                    <th scope="col">Preço</th>
+                    <th scope="col">Estoque</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Kit</th>
+                    <th scope="col">Ações</th>
+                </tr>
+                </thead>
+                <tbody id="listaProdutos"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Seção Vendas -->
+    <section id="vendaSection" style="display: none;">
+        <h4 class="text-success mb-3">Registrar Venda</h4>
+
+        <form id="formVenda" class="card p-4 shadow-sm mb-4 rounded" novalidate>
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label for="produtoId" class="form-label">Código do Produto</label>
+                    <input type="text" id="produtoId" class="form-control" required autocomplete="off" />
+                </div>
+                <div class="col-md-3">
+                    <label for="vendaNome" class="form-label">Nome</label>
+                    <input type="text" id="vendaNome" class="form-control" disabled />
+                </div>
+                <div class="col-md-2">
+                    <label for="vendaPreco" class="form-label">Valor Unitário</label>
+                    <input type="text" id="vendaPreco" class="form-control" disabled/>
+                </div>
+                <div class="col-md-2">
+                    <label for="quantidade" class="form-label">Quantidade</label>
+                    <input type="number" id="quantidade" class="form-control" required min="1" />
+                </div>
+                <div class="col-md-2">
+                    <label for="totalItem" class="form-label">Total do Item</label>
+                    <input type="text" id="totalItem" class="form-control" disabled />
+                </div>
+            </div>
+
+            <div class="row mt-3 g-3">
+                <div class="col-md-4">
+                    <label for="vendaDescricao" class="form-label">Descrição</label>
+                    <input type="text" id="vendaDescricao" class="form-control" disabled />
+                </div>
+                <div class="col-md-4">
+                    <label for="vendaCategoria" class="form-label">Categoria</label>
+                    <input type="text" id="vendaCategoria" class="form-control" disabled />
+                </div>
+                <div class="col-md-4">
+                    <label for="vendaKit" class="form-label">É Kit?</label>
+                    <input type="text" id="vendaKit" class="form-control" disabled />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-success mt-4 w-100" aria-label="Adicionar item à venda">Adicionar Item</button>
+        </form>
+
+        <table class="table table-bordered" aria-label="Itens da venda">
+            <thead>
+            <tr>
+                <th scope="col">Produto</th>
+                <th scope="col">Qtd</th>
+                <th scope="col">Valor Unitário</th>
+                <th scope="col">Total</th>
+            </tr>
+            </thead>
+            <tbody id="tabelaItens"></tbody>
+        </table>
+
+        <div class="text-end mb-3">
+            <strong>Valor Total: R$ <span id="totalVenda">0.00</span></strong>
+        </div>
+
+        <button id="finalizarVenda" class="btn btn-primary mt-3 w-100" aria-label="Finalizar venda">Finalizar Venda</button>
+    </section>
+
+    <!-- Seção Funcionários -->
+    <section id="funcionarioSection" style="display: none;">
+        <h4 class="text-warning mb-3">Cadastro de Funcionários</h4>
+        <form id="formFuncionario" class="card p-3 shadow-sm mb-4 rounded" novalidate>
+            <div class="mb-3">
+                <label for="nomeFunc" class="form-label">Nome do Funcionário</label>
+                <input type="text" id="nomeFunc" placeholder="Nome do Funcionário" class="form-control" required autocomplete="off" />
+            </div>
+            <div class="mb-3">
+                <label for="cargo" class="form-label">Cargo</label>
+                <input type="text" id="cargo" placeholder="Cargo" class="form-control" required autocomplete="off" />
+            </div>
+            <div class="mb-3">
+                <label for="usernameFunc" class="form-label">Usuário (opcional)</label>
+                <input type="text" id="usernameFunc" placeholder="Usuário (opcional)" class="form-control" autocomplete="off" />
+            </div>
+            <div class="mb-3">
+                <label for="passwordFunc" class="form-label">Senha (opcional)</label>
+                <input type="password" id="passwordFunc" placeholder="Senha (opcional)" class="form-control" autocomplete="off" />
+            </div>
+            <button type="submit" class="btn btn-warning w-100" aria-label="Cadastrar funcionário">Cadastrar Funcionário</button>
+        </form>
+
+        <table class="table table-bordered" id="listaFuncionarios" aria-label="Lista de funcionários"></table>
+    </section>
+    <!-- Seção Clientes -->
+    <section id="clienteSection" style="display: none;">
+        <h4 class="text-info mb-3">Cadastro de Clientes</h4>
+
+        <form id="formCliente" class="card p-4 shadow-sm mb-4 rounded">
+            <input type="hidden" id="clienteId" />
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <input type="text" id="clienteNome" class="form-control" placeholder="Nome do Cliente" required />
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="clienteTelefone" class="form-control" placeholder="Telefone" />
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="clienteCep" class="form-control" placeholder="CEP" maxlength="9" />
+                </div>
+                <div class="col-md-6">
+                    <input type="text" id="clienteRua" class="form-control" placeholder="Rua" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" id="clienteNumero" class="form-control" placeholder="Número" />
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="clienteBairro" class="form-control" placeholder="Bairro" />
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="clienteCidade" class="form-control" placeholder="Cidade" />
+                </div>
+                <div class="col-md-2">
+                    <input type="text" id="clienteEstado" class="form-control" placeholder="Estado" />
+                </div>
+                <div class="col-md-6 d-grid">
+                    <button type="button" class="btn btn-success" id="btnCadastrar">Cadastrar Cliente</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Campo de busca unificado -->
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <input type="text" id="filtroQuery" class="form-control" placeholder="Buscar por nome ou CEP" />
+            </div>
+            <div class="col-md-4 d-grid">
+                <button class="btn btn-primary" id="btnBuscarClientes">Buscar</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped shadow-sm">
+                <thead class="table-info">
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Telefone</th>
+                    <th>CEP</th>
+                    <th>Rua</th>
+                    <th>Número</th>
+                    <th>Bairro</th>
+                    <th>Cidade</th>
+                    <th>Estado</th>
+                    <th>Ações</th>
+                </tr>
+                </thead>
+                <tbody id="listaClientes"></tbody>
+            </table>
+        </div>
+    </section>
+</div>
+
+</div>
+
+<!-- JS Principal -->
+<script type="module" src="./js/main.js"></script>
+<!-- Bootstrap Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

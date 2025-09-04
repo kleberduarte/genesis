@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Produtos | Genesis</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- Menu de navegação -->
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm mb-4">
+  <div class="container-lg">
+    <div id="alertArea" class="alert d-none w-100" role="alert" aria-live="polite" aria-atomic="true"></div>
+    <a class="navbar-brand text-primary" href="produtos.html">Genesis</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menuLoja" aria-controls="menuLoja" aria-expanded="false" aria-label="Alternar menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="menuLoja">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link active fw-bold text-primary" href="produtos.html">Produtos</a></li>
+        <li class="nav-item"><a class="nav-link" href="vendas.html">Vendas</a></li>
+        <li class="nav-item"><a class="nav-link" href="funcionarios.html">Funcionários</a></li>
+        <li class="nav-item"><a class="nav-link text-danger" href="#" id="btnLogout">Sair</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Conteúdo principal -->
+<main class="container-lg">
+
+  <!-- Formulário de cadastro -->
+  <section class="mb-5">
+    <h3 class="text-primary mb-4 text-center">Cadastro de Produtos</h3>
+    <form id="formProduto" class="card p-4 shadow-sm" novalidate>
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-3">
+          <label for="produtoIdCadastro" class="form-label">Código do Produto</label>
+          <input type="text" id="produtoIdCadastro" class="form-control" required autocomplete="off" pattern="\S+" title="Código não pode ser vazio" />
+        </div>
+        <div class="col-12 col-md-9">
+          <label for="produtoNome" class="form-label">Nome do Produto</label>
+          <input type="text" id="produtoNome" class="form-control" required autocomplete="off" />
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label for="produtoDescricao" class="form-label">Descrição</label>
+        <textarea id="produtoDescricao" class="form-control" rows="3" required></textarea>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+          <label for="produtoPreco" class="form-label">Preço (R$)</label>
+          <input type="number" step="0.01" min="0" id="produtoPreco" class="form-control" required />
+        </div>
+        <div class="col-12 col-md-6 mb-3">
+          <label for="produtoEstoque" class="form-label">Estoque</label>
+          <input type="number" min="0" id="produtoEstoque" class="form-control" required />
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-12 col-md-6 mb-3">
+          <label for="produtoCategoria" class="form-label">Categoria</label>
+          <input type="text" id="produtoCategoria" class="form-control" placeholder="Ex: categoria" autocomplete="off" />
+        </div>
+        <div class="col-12 col-md-6 d-flex align-items-end mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="produtoKit" />
+            <label class="form-check-label" for="produtoKit">Faz parte de um kit?</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botões Atualizar Produto e Limpar lado a lado -->
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary flex-fill">Atualizar Produto</button>
+        <button type="button" id="btnLimparProduto" class="btn btn-secondary flex-fill">Limpar</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Filtros -->
+  <section class="mb-4">
+    <div class="card p-3 shadow-sm">
+      <div class="row g-2 align-items-center">
+        <div class="col-md-6">
+          <input type="text" id="filtroCodigoNome" class="form-control" placeholder="Digite código/nome" autocomplete="off" />
+        </div>
+        <div class="col-md-6 d-grid gap-2">
+          <button type="button" class="btn btn-outline-primary" id="btnBuscarCodigoNome">🔍 Buscar</button>
+          <button type="button" class="btn btn-outline-secondary" id="btnBuscarCategoria">📁 Categoria</button>
+          <button type="button" class="btn btn-outline-success" id="btnMostrarKits">🎯 Ver Kits</button>
+          <button type="button" class="btn btn-outline-dark" id="btnTodosProdutos">↻ Todos</button>
+        </div>
+      </div>
+      <div class="row mt-3">
+        <div class="col-md-3">
+          <select id="filtroCategoria" class="form-select">
+            <option value="">Filtrar por categoria</option>
+            <option value="balão">Balão</option>
+            <option value="kit">Kit</option>
+            <option value="doces">Doces</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tabela de produtos -->
+  <section id="produtoSection">
+    <h4 class="text-secondary mb-3">Produtos Cadastrados</h4>
+    <div class="table-responsive tabela-fixa">
+      <table class="table table-striped table-bordered shadow-sm">
+        <thead class="table-light">
+        <tr>
+          <th scope="col">Código</th>
+          <th scope="col">Nome</th>
+          <th scope="col">Descrição</th>
+          <th scope="col">Preço (R$)</th>
+          <th scope="col">Estoque</th>
+          <th scope="col">Categoria</th>
+          <th scope="col">Kit</th>
+          <th scope="col">Ações</th>
+        </tr>
+        </thead>
+        <tbody id="listaProdutos">
+        <!-- JS insere produtos aqui -->
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>
