@@ -11,6 +11,7 @@
 <section id="clienteSection" class="container py-4">
   <h2 class="text-center text-primary mb-4">Cadastro de Clientes</h2>
 
+  <!-- Formulário de cadastro -->
   <form id="formCliente" class="card p-4 shadow-sm mb-4">
     <input type="hidden" id="clienteId" />
 
@@ -45,18 +46,17 @@
     </div>
   </form>
 
+  <!-- Campo de busca unificado -->
   <div class="row mb-3">
-    <div class="col-md-4">
-      <input type="text" id="filtroNome" class="form-control" placeholder="Buscar por nome" />
-    </div>
-    <div class="col-md-4">
-      <input type="text" id="filtroCep" class="form-control" placeholder="Buscar por CEP" maxlength="9" />
+    <div class="col-md-8">
+      <input type="text" id="filtroQuery" class="form-control" placeholder="Buscar por nome ou CEP" />
     </div>
     <div class="col-md-4 d-grid">
       <button class="btn btn-primary" id="btnBuscarClientes">Buscar</button>
     </div>
   </div>
 
+  <!-- Tabela de clientes -->
   <div class="table-responsive">
     <table class="table table-bordered table-striped shadow-sm">
       <thead class="table-primary">

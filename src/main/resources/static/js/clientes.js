@@ -1,31 +1,28 @@
 const API_URL = "http://localhost:8080/api/clientes";
 
-// 🔄 Inicializa os eventos do formulário e dos filtros
+// 🔄 Inicializa os eventos do formulário e do filtro
 function setupFormularioCliente() {
   const cepInput = document.getElementById("clienteCep");
   const btnCadastrar = document.getElementById("btnCadastrar");
   const btnBuscar = document.getElementById("btnBuscarClientes");
-  const filtroNome = document.getElementById("filtroNome");
-  const filtroCep = document.getElementById("filtroCep");
+  const filtroQuery = document.getElementById("filtroQuery");
 
   if (cepInput) cepInput.addEventListener("blur", buscarEnderecoPorCep);
   if (btnCadastrar) btnCadastrar.addEventListener("click", cadastrarCliente);
   if (btnBuscar) btnBuscar.addEventListener("click", buscarClientes);
 
-  [filtroNome, filtroCep].forEach(input => {
-    input.addEventListener("keydown", function (e) {
+  if (filtroQuery) {
+    filtroQuery.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         e.preventDefault();
         buscarClientes();
       }
     });
 
-    input.addEventListener("input", function () {
-      const nome = filtroNome.value.trim();
-      const cep = filtroCep.value.trim();
-      if (!nome && !cep) carregarClientes();
+    filtroQuery.addEventListener("input", function () {
+      if (!filtroQuery.value.trim()) carregarClientes();
     });
-  });
+  }
 }
 
 // 📦 Preencher endereço via ViaCEP
@@ -100,21 +97,16 @@ async function carregarClientes() {
   }
 }
 
-// 🔍 Buscar por nome ou CEP
+// 🔍 Buscar por nome ou CEP (campo unificado)
 async function buscarClientes() {
-  const nome = document.getElementById("filtroNome").value.trim();
-  const cep = document.getElementById("filtroCep").value.trim();
+  const query = document.getElementById("filtroQuery").value.trim();
 
-  if (!nome && !cep) {
+  if (!query) {
     carregarClientes();
     return;
   }
 
-  let url = `${API_URL}/buscar`;
-  const params = [];
-  if (nome) params.push(`nome=${encodeURIComponent(nome)}`);
-  if (cep) params.push(`cep=${encodeURIComponent(cep)}`);
-  if (params.length > 0) url += `?${params.join("&")}`;
+  const url = `${API_URL}/buscar?query=${encodeURIComponent(query)}`;
 
   try {
     const res = await fetch(url);
