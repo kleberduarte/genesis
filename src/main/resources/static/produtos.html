@@ -67,7 +67,7 @@
       <div class="row">
         <div class="col-12 col-md-6 mb-3">
           <label for="produtoCategoria" class="form-label">Categoria</label>
-          <input type="text" id="produtoCategoria" class="form-control" placeholder="Ex: categoria" autocomplete="off" />
+          <input type="text" id="produtoCategoria" class="form-control" placeholder="Ex: Eletrônicos" autocomplete="off" />
         </div>
         <div class="col-12 col-md-6 d-flex align-items-end mb-3">
           <div class="form-check">
@@ -77,7 +77,6 @@
         </div>
       </div>
 
-      <!-- Botões Atualizar Produto e Limpar lado a lado -->
       <div class="d-flex gap-2">
         <button type="submit" class="btn btn-primary flex-fill">Atualizar Produto</button>
         <button type="button" id="btnLimparProduto" class="btn btn-secondary flex-fill">Limpar</button>
@@ -103,9 +102,7 @@
         <div class="col-md-3">
           <select id="filtroCategoria" class="form-select">
             <option value="">Filtrar por categoria</option>
-            <option value="balão">Balão</option>
-            <option value="kit">Kit</option>
-            <option value="doces">Doces</option>
+            <!-- opções serão carregadas via produto.js -->
           </select>
         </div>
       </div>
@@ -140,6 +137,7 @@
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="produto.js"></script>
 
 </body>
 </html>

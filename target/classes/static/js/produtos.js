@@ -12,6 +12,7 @@ export function mostrarProdutos() {
 
   adicionarEventosFiltros();
   setupFormularioProduto();
+  carregarCategorias();
   carregarProdutos(); // Carrega todos os produtos inicialmente
 }
 
@@ -35,6 +36,7 @@ export function carregarProdutos(endpoint = "/api/produtos") {
 }
 
 // --- Filtros ---
+
 // Busca por código ou nome e atualiza a tabela
 export function buscarPorCodigoOuNome() {
   const valor = document.getElementById("filtroCodigoNome")?.value.trim();
@@ -77,11 +79,30 @@ export function buscarProdutoParaEdicao() {
     });
 }
 
-// Filtra produtos pela categoria selecionada
+// Filtra produtos por categoria usando query param correto
 export function filtrarPorCategoria() {
   const categoria = document.getElementById("filtroCategoria")?.value;
-  if (!categoria) return showAlert("Escolha uma categoria válida.", "warning");
+  if (!categoria) {
+    carregarProdutos(); // Sem filtro, carrega todos
+    return;
+  }
   carregarProdutos(`/api/produtos/categoria?categoria=${encodeURIComponent(categoria)}`);
+}
+
+// 🔄 Carrega categorias distintas do backend
+export function carregarCategorias() {
+  fetch(`${API_URL}/api/produtos/categorias`, {
+    headers: authenticatedHeaders(),
+  })
+    .then((res) => res.json())
+    .then((categorias) => {
+      const select = document.getElementById("filtroCategoria");
+      if (!select) return;
+
+      select.innerHTML = `<option value="">Todas</option>` +
+        categorias.map((cat) => `<option value="${cat}">${cat}</option>`).join("");
+    })
+    .catch((err) => showAlert("Erro ao carregar categorias: " + err, "danger"));
 }
 
 // Mostra apenas os produtos que são kits

@@ -26,4 +26,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
     // Verifica se o produto já foi usado em alguma venda
     @Query("SELECT COUNT(iv) > 0 FROM ItemVenda iv WHERE iv.produto.id = :produtoId")
     boolean existsProdutoVendido(@Param("produtoId") Long produtoId);
+
+    // Busca todas as categorias distintas cadastradas
+    @Query("SELECT DISTINCT p.categoria FROM Produto p WHERE p.categoria IS NOT NULL AND p.categoria <> ''")
+    List<String> findDistinctCategorias();
 }

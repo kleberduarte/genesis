@@ -48,6 +48,19 @@ public class ProdutoService {
         return repo.findByCategoria(categoria);
     }
 
+    // Buscar produtos com filtro opcional por categoria
+    public List<Produto> buscarComFiltro(String categoria) {
+        if (categoria == null || categoria.isEmpty()) {
+            return repo.findAll();
+        }
+        return repo.findByCategoria(categoria);
+    }
+
+    // Listar todas as categorias distintas cadastradas
+    public List<String> listarCategorias() {
+        return repo.findDistinctCategorias();
+    }
+
     // Listar produtos que são kits
     public List<Produto> listarKits() {
         return repo.findByKitTrue();

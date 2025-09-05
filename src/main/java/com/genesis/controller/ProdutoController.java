@@ -29,12 +29,10 @@ public class ProdutoController {
 
         try {
             if (busca.matches("\\d+")) {
-                // Apenas dígitos: buscar por código
                 Optional<Produto> produto = produtoService.buscarPorCodigo(busca);
                 return produto.map(p -> ResponseEntity.ok(List.of(p)))
                         .orElse(ResponseEntity.notFound().build());
             } else {
-                // Buscar por nome (parcial, case-insensitive)
                 List<Produto> produtos = produtoService.buscarPorNome(busca);
                 if (produtos.isEmpty()) {
                     return ResponseEntity.notFound().build();
@@ -46,10 +44,18 @@ public class ProdutoController {
         }
     }
 
-    // 📦 Listar todos os produtos
+    // 📦 Listar produtos com filtro opcional por categoria
     @GetMapping
-    public List<Produto> listar() {
-        return produtoService.listarTodos();
+    public ResponseEntity<List<Produto>> listarProdutos(@RequestParam(required = false) String categoria) {
+        List<Produto> produtos = produtoService.buscarComFiltro(categoria);
+        return ResponseEntity.ok(produtos);
+    }
+
+    // 📂 Listar todas as categorias distintas
+    @GetMapping("/categorias")
+    public ResponseEntity<List<String>> listarCategorias() {
+        List<String> categorias = produtoService.listarCategorias();
+        return ResponseEntity.ok(categorias);
     }
 
     // ➕ Cadastrar novo produto
@@ -69,7 +75,7 @@ public class ProdutoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    // 📁 Buscar por categoria
+    // 📁 Buscar por categoria (método direto, ainda disponível)
     @GetMapping("/categoria")
     public List<Produto> buscarPorCategoria(@RequestParam String categoria) {
         return produtoService.buscarPorCategoria(categoria);
