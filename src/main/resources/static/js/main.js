@@ -22,7 +22,7 @@ import {
   limparSecaoClientes,
 } from "./clientes.js";
 
-// Expor para uso em botões dinâmicos HTML
+// Expor para uso global nos botões
 window.excluirProduto = excluirProduto;
 window.preencherFormularioParaEdicao = preencherFormularioParaEdicao;
 window.excluirFuncionario = excluirFuncionario;
@@ -61,31 +61,26 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  // --- Referências aos links de navegação ---
+  // --- Referências aos links ---
   const linkProdutos = document.getElementById("linkProdutos");
   const linkVendas = document.getElementById("linkVendas");
   const linkFuncionarios = document.getElementById("linkFuncionarios");
   const linkClientes = document.getElementById("linkClientes");
   const btnLogout = document.getElementById("btnLogout");
 
-  // --- PRODUTOS ---
+  // --- Event listeners ---
   linkProdutos?.addEventListener("click", (e) => {
     e.preventDefault();
-    console.log("📌 Produtos clicado");
     mostrarSecao("produtoSection", mostrarProdutos, "linkProdutos");
   });
 
-  // --- VENDAS ---
   linkVendas?.addEventListener("click", (e) => {
     e.preventDefault();
-    console.log("📌 Vendas clicado");
     mostrarSecao("vendaSection", inicializarVendaAvancada, "linkVendas");
   });
 
-  // --- FUNCIONÁRIOS ---
   linkFuncionarios?.addEventListener("click", (e) => {
     e.preventDefault();
-    console.log("📌 Funcionários clicado");
     mostrarSecao(
       "funcionarioSection",
       () => {
@@ -96,10 +91,8 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
-  // --- CLIENTES ---
   linkClientes?.addEventListener("click", (e) => {
     e.preventDefault();
-    console.log("📌 Clientes clicado");
     mostrarSecao(
       "clienteSection",
       () => {
@@ -110,19 +103,16 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   });
 
-  // --- LOGOUT ---
   btnLogout?.addEventListener("click", (e) => {
     e.preventDefault();
-    console.log("🔓 Logout solicitado");
     logout();
   });
 
-  // --- Inicialização automática se seção estiver visível ---
-  if (document.getElementById("formProduto")) {
-    console.log("🧾 Formulário de produtos detectado — inicializando");
-    mostrarSecao("produtoSection", mostrarProdutos, "linkProdutos");
-  } else if (document.getElementById("vendaSection")) {
+  // --- Exibir a seção de vendas como padrão SEM depender de parâmetros na URL ---
+  if (document.getElementById("vendaSection")) {
     mostrarSecao("vendaSection", inicializarVendaAvancada, "linkVendas");
+  } else if (document.getElementById("formProduto")) {
+    mostrarSecao("produtoSection", mostrarProdutos, "linkProdutos");
   } else if (document.getElementById("funcionarioSection")) {
     mostrarSecao(
       "funcionarioSection",
