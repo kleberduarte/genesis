@@ -6,6 +6,11 @@ export function getToken() {
   return localStorage.getItem("token");
 }
 
+// Retorna o perfil salvo no localStorage
+export function getPerfil() {
+  return localStorage.getItem("perfil");
+}
+
 // Headers para requisições autenticadas
 export function authenticatedHeaders() {
   return {
@@ -31,6 +36,7 @@ export function checkLoginRedirect() {
 // Logout e redireciona para tela de login
 export function logout() {
   localStorage.removeItem("token");
+  localStorage.removeItem("perfil");
   window.location.href = "login.html";
 }
 
@@ -54,7 +60,10 @@ export function setupLoginForm(showAlert) {
       const data = await res.json();
       if (!data.token) throw "Token ausente";
 
+      // Salva o token e o perfil no localStorage
       localStorage.setItem("token", data.token);
+      localStorage.setItem("perfil", data.perfil);
+
       showAlert("Login realizado com sucesso!", "success");
 
       setTimeout(() => {

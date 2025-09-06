@@ -3,20 +3,28 @@ import { showAlert, esconderTodas } from "./ui.js";
 
 const API_URL = "http://localhost:8080";
 
-// Mostra a seção produtos, esconde as outras e configura filtros e formulário
+// --- EXIBIÇÃO E INICIALIZAÇÃO ---
+
+// Mostra a seção de produtos, esconde as outras e configura filtros, formulário e carrega dados
 export function mostrarProdutos() {
   esconderTodas();
+
   const section = document.getElementById("produtoSection");
-  if (!section) return console.warn("❌ Seção produtoSection não encontrada");
+  if (!section) {
+    console.warn("❌ Seção produtoSection não encontrada");
+    return;
+  }
   section.style.display = "block";
 
   adicionarEventosFiltros();
   setupFormularioProduto();
   carregarCategorias();
-  carregarProdutos(); // Carrega todos os produtos inicialmente
+  carregarProdutos(); // carrega todos produtos inicialmente
 }
 
-// Carrega produtos, podendo usar um endpoint customizado (filtros)
+// --- CARREGAMENTO DE DADOS ---
+
+// Carrega produtos do backend, aceita endpoint customizado para filtros
 export function carregarProdutos(endpoint = "/api/produtos") {
   fetch(`${API_URL}${endpoint}`, {
     headers: authenticatedHeaders(),
@@ -35,17 +43,26 @@ export function carregarProdutos(endpoint = "/api/produtos") {
     .catch((err) => showAlert("Erro: " + err, "danger"));
 }
 
-// --- Filtros ---
+// Carrega categorias distintas para filtro
+export function carregarCategorias() {
+  fetch(`${API_URL}/api/produtos/categorias`, {
+    headers: authenticatedHeaders(),
+  })
+    .then((res) => res.json())
+    .then((categorias) => {
+      const select = document.getElementById("filtroCategoria");
+      if (!select) return;
 
-// Busca por código ou nome e atualiza a tabela
-export function buscarPorCodigoOuNome() {
-  const valor = document.getElementById("filtroCodigoNome")?.value.trim();
-  if (!valor) return showAlert("Digite um código ou nome.", "warning");
-
-  carregarProdutos(`/api/produtos/buscar?busca=${encodeURIComponent(valor)}`);
+      select.innerHTML =
+        `<option value="">Todas</option>` +
+        categorias.map((cat) => `<option value="${cat}">${cat}</option>`).join("");
+    })
+    .catch((err) => showAlert("Erro ao carregar categorias: " + err, "danger"));
 }
 
-// Busca produto específico para edição e preenche formulário
+// --- FILTROS ---
+
+// Busca produtos por código ou nome para edição e preenchimento do formulário
 export function buscarProdutoParaEdicao() {
   const input = document.getElementById("filtroCodigoNome");
   const valor = input?.value.trim();
@@ -68,7 +85,6 @@ export function buscarProdutoParaEdicao() {
       }
 
       const p = Array.isArray(produto) ? produto[0] : produto;
-
       preencherFormularioParaEdicao(p);
       showAlert("Produto carregado no formulário.", "success");
 
@@ -79,38 +95,31 @@ export function buscarProdutoParaEdicao() {
     });
 }
 
-// Filtra produtos por categoria usando query param correto
+// Busca e filtra produtos por código ou nome para exibir na tabela
+export function buscarPorCodigoOuNome() {
+  const valor = document.getElementById("filtroCodigoNome")?.value.trim();
+  if (!valor) return showAlert("Digite um código ou nome.", "warning");
+
+  carregarProdutos(`/api/produtos/buscar?busca=${encodeURIComponent(valor)}`);
+}
+
+// Filtra produtos por categoria
 export function filtrarPorCategoria() {
   const categoria = document.getElementById("filtroCategoria")?.value;
   if (!categoria) {
-    carregarProdutos(); // Sem filtro, carrega todos
+    carregarProdutos(); // sem filtro, carrega todos
     return;
   }
   carregarProdutos(`/api/produtos/categoria?categoria=${encodeURIComponent(categoria)}`);
 }
 
-// 🔄 Carrega categorias distintas do backend
-export function carregarCategorias() {
-  fetch(`${API_URL}/api/produtos/categorias`, {
-    headers: authenticatedHeaders(),
-  })
-    .then((res) => res.json())
-    .then((categorias) => {
-      const select = document.getElementById("filtroCategoria");
-      if (!select) return;
-
-      select.innerHTML = `<option value="">Todas</option>` +
-        categorias.map((cat) => `<option value="${cat}">${cat}</option>`).join("");
-    })
-    .catch((err) => showAlert("Erro ao carregar categorias: " + err, "danger"));
-}
-
-// Mostra apenas os produtos que são kits
+// Mostra somente produtos que são kits
 export function mostrarKits() {
   carregarProdutos("/api/produtos/kits");
 }
 
-// --- Adiciona eventos aos botões dos filtros ---
+// --- EVENTOS DE FILTROS ---
+
 function adicionarEventosFiltros() {
   const btnBuscarCodigoNome = document.getElementById("btnBuscarCodigoNome");
   const btnBuscarCategoria = document.getElementById("btnBuscarCategoria");
@@ -118,13 +127,11 @@ function adicionarEventosFiltros() {
   const btnTodos = document.getElementById("btnTodosProdutos");
   const inputBusca = document.getElementById("filtroCodigoNome");
 
-  // Eventos de clique nos botões
   btnBuscarCodigoNome?.addEventListener("click", buscarProdutoParaEdicao);
   btnBuscarCategoria?.addEventListener("click", filtrarPorCategoria);
   btnVerKits?.addEventListener("click", mostrarKits);
   btnTodos?.addEventListener("click", () => carregarProdutos());
 
-  // Evento de Enter no campo de busca
   inputBusca?.addEventListener("keydown", function (event) {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -133,24 +140,20 @@ function adicionarEventosFiltros() {
   });
 }
 
-// --- Formulário de cadastro / edição ---
+// --- FORMULÁRIO ---
+
 export function setupFormularioProduto() {
   const form = document.getElementById("formProduto");
   const btnLimpar = document.getElementById("btnLimparProduto");
 
   if (!form) return;
 
-  // Remove e adiciona para evitar múltiplos handlers
   form.removeEventListener("submit", submitHandler);
   form.addEventListener("submit", submitHandler);
 
-  // Evento para botão limpar: limpa formulário e muda texto botão submit
-  btnLimpar?.addEventListener("click", () => {
-    resetFormProduto();
-  });
+  btnLimpar?.addEventListener("click", resetFormProduto);
 }
 
-// Manipula envio do formulário para criar ou editar produto
 function submitHandler(e) {
   e.preventDefault();
 
@@ -173,7 +176,6 @@ function submitHandler(e) {
   }
 }
 
-// Captura dados do formulário em objeto
 function capturarDadosFormulario() {
   return {
     codigo: document.getElementById("produtoIdCadastro")?.value.trim(),
@@ -186,7 +188,6 @@ function capturarDadosFormulario() {
   };
 }
 
-// Valida os dados do produto antes de enviar
 function validarProduto(produto) {
   if (!produto.codigo) return { valido: false, mensagem: "Código é obrigatório." };
   if (!produto.nome) return { valido: false, mensagem: "Nome é obrigatório." };
@@ -196,7 +197,33 @@ function validarProduto(produto) {
   return { valido: true };
 }
 
-// Envia requisição para cadastrar um novo produto
+function toggleBotaoSubmit(disable) {
+  const form = document.getElementById("formProduto");
+  if (!form) return;
+
+  const btn = form.querySelector("button[type=submit]");
+  if (disable) {
+    btn.disabled = true;
+    btn.textContent = "Carregando...";
+  } else {
+    btn.disabled = false;
+    btn.textContent = form.hasAttribute("data-edit-id") ? "Atualizar Produto" : "Cadastrar Produto";
+  }
+}
+
+function resetFormProduto() {
+  const form = document.getElementById("formProduto");
+  if (!form) return;
+
+  form.reset();
+  form.removeAttribute("data-edit-id");
+
+  const btnSubmit = form.querySelector("button[type=submit]");
+  if (btnSubmit) btnSubmit.textContent = "Cadastrar Produto";
+}
+
+// --- CADASTRAR, EDITAR E EXCLUIR ---
+
 function cadastrarProduto(produto) {
   fetch(`${API_URL}/api/produtos`, {
     method: "POST",
@@ -225,7 +252,6 @@ function cadastrarProduto(produto) {
     });
 }
 
-// Envia requisição para editar produto existente
 export function editarProduto(id, produto) {
   fetch(`${API_URL}/api/produtos/${id}`, {
     method: "PUT",
@@ -254,57 +280,6 @@ export function editarProduto(id, produto) {
     });
 }
 
-// Preenche o formulário para edição de produto
-export function preencherFormularioParaEdicao(produto) {
-  const form = document.getElementById("formProduto");
-  if (!form) return;
-
-  document.getElementById("produtoIdCadastro").value = produto.codigo || "";
-  document.getElementById("produtoNome").value = produto.nome || "";
-  document.getElementById("produtoDescricao").value = produto.descricao || "";
-  document.getElementById("produtoPreco").value = produto.preco ?? "";
-  document.getElementById("produtoEstoque").value = produto.estoque ?? "";
-  document.getElementById("produtoCategoria").value = produto.categoria || "";
-  document.getElementById("produtoKit").checked = produto.kit || false;
-
-  form.setAttribute("data-edit-id", produto.id);
-
-  const btnSubmit = form.querySelector("button[type=submit]");
-  if (btnSubmit) {
-    btnSubmit.textContent = "Atualizar Produto";
-  }
-}
-
-// Reseta o formulário após cadastro ou edição
-function resetFormProduto() {
-  const form = document.getElementById("formProduto");
-  if (!form) return;
-
-  form.reset();
-  form.removeAttribute("data-edit-id");
-
-  const btnSubmit = form.querySelector("button[type=submit]");
-  if (btnSubmit) {
-    btnSubmit.textContent = "Cadastrar Produto";
-  }
-}
-
-// Habilita/desabilita botão submit e altera texto durante processamento
-function toggleBotaoSubmit(disable) {
-  const form = document.getElementById("formProduto");
-  if (!form) return;
-
-  const btn = form.querySelector("button[type=submit]");
-  if (disable) {
-    btn.disabled = true;
-    btn.textContent = "Carregando...";
-  } else {
-    btn.disabled = false;
-    btn.textContent = form.hasAttribute("data-edit-id") ? "Atualizar Produto" : "Cadastrar Produto";
-  }
-}
-
-// --- Exclusão ---
 export function excluirProduto(id) {
   if (!confirm("Tem certeza que deseja excluir este produto?")) return;
 
@@ -323,7 +298,28 @@ export function excluirProduto(id) {
     .catch((err) => showAlert("Erro: " + err, "danger"));
 }
 
-// --- Renderização tabela ---
+// --- FORMULÁRIO DE EDIÇÃO ---
+
+export function preencherFormularioParaEdicao(produto) {
+  const form = document.getElementById("formProduto");
+  if (!form) return;
+
+  document.getElementById("produtoIdCadastro").value = produto.codigo || "";
+  document.getElementById("produtoNome").value = produto.nome || "";
+  document.getElementById("produtoDescricao").value = produto.descricao || "";
+  document.getElementById("produtoPreco").value = produto.preco ?? "";
+  document.getElementById("produtoEstoque").value = produto.estoque ?? "";
+  document.getElementById("produtoCategoria").value = produto.categoria || "";
+  document.getElementById("produtoKit").checked = produto.kit || false;
+
+  form.setAttribute("data-edit-id", produto.id);
+
+  const btnSubmit = form.querySelector("button[type=submit]");
+  if (btnSubmit) btnSubmit.textContent = "Atualizar Produto";
+}
+
+// --- RENDERIZAÇÃO DA TABELA ---
+
 function renderizarTabela(produtos) {
   const tabela = document.getElementById("listaProdutos");
   if (!tabela) return;
@@ -348,13 +344,12 @@ function renderizarTabela(produtos) {
         <button class="btn btn-warning btn-sm btn-editar" data-id="${p.id}">Editar</button>
         <button class="btn btn-danger btn-sm btn-excluir" data-id="${p.id}">Excluir</button>
       </td>
-    </tr>
-  `
+    </tr>`
     )
     .join("");
 }
 
-// Adiciona eventos de edição e exclusão para cada botão na tabela
+// Vincula eventos de editar e excluir aos botões da tabela
 function vincularEventosAcoes(produtos) {
   const btnsEditar = document.querySelectorAll("#listaProdutos .btn-editar");
   const btnsExcluir = document.querySelectorAll("#listaProdutos .btn-excluir");

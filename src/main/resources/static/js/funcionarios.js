@@ -34,6 +34,7 @@ export async function mostrarFuncionarios() {
         <td>${func.nome}</td>
         <td>${func.cargo}</td>
         <td>${func.usuario?.username || '-'}</td>
+        <td>${func.usuario?.perfil || '-'}</td>
         <td>
           <button class="btn btn-sm btn-danger" onclick="excluirFuncionario(${func.id})">
             Excluir
@@ -84,9 +85,10 @@ export function setupFormularioFuncionario() {
   const cargoEl = document.getElementById("cargo");
   const userEl = document.getElementById("usernameFunc");
   const passEl = document.getElementById("passwordFunc");
+  const perfilEl = document.getElementById("perfilFunc");
   const tabela = document.getElementById("listaFuncionarios");
 
-  if (!form || !nomeEl || !cargoEl || !userEl || !passEl || !tabela) return;
+  if (!form || !nomeEl || !cargoEl || !userEl || !passEl || !perfilEl || !tabela) return;
 
   // Sugestão de usuário enquanto digita
   nomeEl.addEventListener("input", () => {
@@ -101,6 +103,7 @@ export function setupFormularioFuncionario() {
 
     const nome = nomeEl.value.trim();
     const cargo = cargoEl.value.trim();
+    const perfil = perfilEl.value;
     let username = userEl.value.trim();
     let password = passEl.value.trim();
 
@@ -117,7 +120,8 @@ export function setupFormularioFuncionario() {
       cargo,
       usuario: {
         username,
-        password
+        password,
+        perfil
       }
     };
 

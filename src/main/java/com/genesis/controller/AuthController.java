@@ -18,17 +18,29 @@ public class AuthController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private JwtUtil jwtUtil; // ✅ injeta a classe responsável por gerar JWT
+    private JwtUtil jwtUtil;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+        // Busca o usuário no banco usando username e senha
         Usuario u = usuarioService.buscarPorUsernameESenha(usuario.getUsername(), usuario.getPassword());
+
         if (u != null) {
-            // ✅ agora o token é um JWT real
+            // Gera um token JWT com base no username
             String token = jwtUtil.generateToken(u.getUsername());
-            return ResponseEntity.ok(Map.of("token", token));
+
+            // Retorna o token + o perfil (ADMIN ou NORMAL)
+            return ResponseEntity.ok(
+                    Map.of(
+                            "token", token,
+                            "perfil", u.getPerfil() // Certifique-se de que o campo perfil existe na entidade
+                    )
+            );
         } else {
-            return ResponseEntity.status(401).body(Map.of("erro", "Credenciais inválidas"));
+            // Credenciais inválidas
+            return ResponseEntity.status(401).body(
+                    Map.of("erro", "Credenciais inválidas")
+            );
         }
     }
 }

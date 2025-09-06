@@ -1,4 +1,4 @@
-import { checkLoginRedirect, setupLoginForm, logout } from "./auth.js";
+import { checkLoginRedirect, setupLoginForm, logout, getPerfil } from "./auth.js";
 import { showAlert, esconderTodas, destacarMenu } from "./ui.js";
 import {
   mostrarProdutos,
@@ -22,7 +22,6 @@ import {
   limparSecaoClientes,
 } from "./clientes.js";
 
-// Expor para uso global nos botões
 window.excluirProduto = excluirProduto;
 window.preencherFormularioParaEdicao = preencherFormularioParaEdicao;
 window.excluirFuncionario = excluirFuncionario;
@@ -30,6 +29,15 @@ window.excluirCliente = excluirCliente;
 window.editarCliente = editarCliente;
 
 function mostrarSecao(idSecao, callback, menuId) {
+  const perfil = getPerfil();
+
+  // Bloqueia o acesso à seção de funcionários para perfil NORMAL, garantindo controle centralizado
+  if (idSecao === "funcionarioSection" && perfil === "NORMAL") {
+    alert("Acesso negado! Você não tem permissão para acessar esta área.");
+    mostrarSecao("vendaSection", inicializarVendaAvancada, "linkVendas");
+    return;
+  }
+
   console.log(`🔄 Alternando para seção: ${idSecao}`);
 
   if (idSecao !== "clienteSection") limparSecaoClientes();
@@ -50,22 +58,46 @@ function mostrarSecao(idSecao, callback, menuId) {
   }
 }
 
+function bloquearAcessoFuncionalidadeParaNormal() {
+  const perfil = getPerfil();
+
+  if (perfil === "NORMAL") {
+    // Esconder link de funcionários no menu
+    const linkFuncionarios = document.getElementById("linkFuncionarios");
+    if (linkFuncionarios) {
+      linkFuncionarios.style.display = "none";
+    }
+
+    // Se estiver tentando acessar a seção de funcionários direto via URL ou DOM, redireciona para vendas
+    const funcionarioSection = document.getElementById("funcionarioSection");
+    if (funcionarioSection && funcionarioSection.style.display !== "none") {
+      alert("Acesso negado! Você não tem permissão para acessar esta área. Redirecionando para vendas.");
+      mostrarSecao("vendaSection", inicializarVendaAvancada, "linkVendas");
+    }
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   checkLoginRedirect();
 
-  const currentPage = window.location.pathname.split("/").pop();
-  console.log("📄 Página atual:", currentPage);
+  const perfil = getPerfil();
+  console.log("Perfil do usuário:", perfil);
 
+  // Se estivermos na página de login, só configura o formulário e retorna
+  const currentPage = window.location.pathname.split("/").pop();
   if (currentPage === "login.html") {
     setupLoginForm(showAlert);
     return;
   }
 
+  // Bloquear o acesso restrito para perfil NORMAL
+  bloquearAcessoFuncionalidadeParaNormal();
+
   // --- Referências aos links ---
   const linkProdutos = document.getElementById("linkProdutos");
   const linkVendas = document.getElementById("linkVendas");
-  const linkFuncionarios = document.getElementById("linkFuncionarios");
   const linkClientes = document.getElementById("linkClientes");
+  const linkFuncionarios = document.getElementById("linkFuncionarios");
   const btnLogout = document.getElementById("btnLogout");
 
   // --- Event listeners ---
@@ -81,6 +113,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
   linkFuncionarios?.addEventListener("click", (e) => {
     e.preventDefault();
+
+    if (perfil === "NORMAL") {
+      alert("Acesso negado! Você não tem permissão para acessar esta área.");
+      return;
+    }
+
     mostrarSecao(
       "funcionarioSection",
       () => {
@@ -108,20 +146,25 @@ document.addEventListener("DOMContentLoaded", () => {
     logout();
   });
 
-  // --- Exibir a seção de vendas como padrão SEM depender de parâmetros na URL ---
+  // --- Exibir a seção padrão ---
   if (document.getElementById("vendaSection")) {
     mostrarSecao("vendaSection", inicializarVendaAvancada, "linkVendas");
   } else if (document.getElementById("formProduto")) {
     mostrarSecao("produtoSection", mostrarProdutos, "linkProdutos");
   } else if (document.getElementById("funcionarioSection")) {
-    mostrarSecao(
-      "funcionarioSection",
-      () => {
-        mostrarFuncionarios();
-        setupFormularioFuncionario();
-      },
-      "linkFuncionarios"
-    );
+    if (perfil === "NORMAL") {
+      alert("Acesso negado! Redirecionando para vendas.");
+      mostrarSecao("vendaSection", inicializarVendaAvancada, "linkVendas");
+    } else {
+      mostrarSecao(
+        "funcionarioSection",
+        () => {
+          mostrarFuncionarios();
+          setupFormularioFuncionario();
+        },
+        "linkFuncionarios"
+      );
+    }
   } else if (document.getElementById("clienteSection")) {
     mostrarSecao(
       "clienteSection",
