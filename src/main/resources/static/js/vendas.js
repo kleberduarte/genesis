@@ -1,18 +1,50 @@
-// vendas.js
+import { authenticatedHeaders } from "./auth.js";
+import { showAlert } from "./ui.js";
 
-import { authenticatedHeaders } from "./auth.js";  // Autenticação com token
-import { showAlert } from "./ui.js";               // Alerta na UI
+const API_URL = "http://localhost:8080";
 
-const API_URL = "http://localhost:8080";           // Backend API URL
+// Utilitários
+const $ = id => document.getElementById(id);
+const parseFloatSafe = val => parseFloat(val?.replace(",", ".")) || 0;
+const parseIntSafe = val => parseInt(val) || 0;
 
-// Função principal que inicializa a lógica da tela de vendas
+// Funções auxiliares
+function limparCamposVenda() {
+  ["produtoId", "vendaNome", "vendaPreco", "vendaDescricao", "vendaCategoria", "vendaKit", "quantidade", "totalItem"].forEach(id => {
+    const el = $(id);
+    if (el) el.value = "";
+    if (id === "produtoId") el.removeAttribute("data-produto-id");
+  });
+}
+
+function atualizarTotalItem() {
+  const preco = parseFloatSafe($("vendaPreco").value);
+  const qtd = parseIntSafe($("quantidade").value);
+  $("totalItem").value = (preco * qtd).toFixed(2);
+}
+
+function adicionarItemTabela({ nome, qtd, preco, total }) {
+  $("tabelaItens").innerHTML += `
+    <tr>
+      <td>${nome}</td>
+      <td>${qtd}</td>
+      <td>R$ ${preco.toFixed(2)}</td>
+      <td>R$ ${total.toFixed(2)}</td>
+    </tr>
+  `;
+}
+
+function preencherCamposProduto(p) {
+  $("vendaNome").value = p.nome;
+  $("vendaPreco").value = p.preco.toFixed(2);
+  $("vendaDescricao").value = p.descricao;
+  $("vendaCategoria").value = p.categoria;
+  $("vendaKit").value = p.kit ? "Sim" : "Não";
+  $("produtoId").dataset.produtoId = p.id;
+}
+
 export function inicializarVendaAvancada() {
-  const itensVenda = [];  // Armazena os itens da venda
-  let totalVenda = 0;     // Soma total da venda
-
-  const totalVendaSpan = document.getElementById("totalVenda");
-
-  // Verifica se o elemento #totalVenda existe no DOM
+  const totalVendaSpan = $("totalVenda");
   if (!totalVendaSpan) {
     console.warn("⚠️ Elemento #totalVenda não encontrado. VendaAvancada não será inicializada.");
     return;
@@ -20,11 +52,13 @@ export function inicializarVendaAvancada() {
 
   console.log("✅ inicializarVendaAvancada() iniciada");
 
-  // 🔄 Evento: carregar dados do produto ao selecionar o código
-  document.getElementById("produtoId")?.addEventListener("change", async function () {
-    const codigo = this.value;  // Código inserido no campo
+  const itensVenda = [];
+  let totalVenda = 0;
 
-    console.log("🔍 Produto selecionado:", codigo);
+  // Buscar produto ao alterar código
+  $("produtoId")?.addEventListener("change", async function () {
+    const codigo = this.value.trim();
+    if (!codigo) return;
 
     try {
       const res = await fetch(`${API_URL}/api/produtos/buscar?busca=${encodeURIComponent(codigo)}`, {
@@ -34,103 +68,65 @@ export function inicializarVendaAvancada() {
       if (!res.ok) throw new Error("Produto não encontrado");
 
       const data = await res.json();
-      const p = Array.isArray(data) ? data[0] : data; // Se for um array, pega o primeiro item
+      const p = Array.isArray(data) ? data[0] : data;
 
       if (!p || !p.preco) throw new Error("Produto inválido");
 
-      // Preenche os campos com os dados do produto
-      document.getElementById("vendaNome").value = p.nome;
-      document.getElementById("vendaPreco").value = p.preco.toFixed(2);
-      document.getElementById("vendaDescricao").value = p.descricao;
-      document.getElementById("vendaCategoria").value = p.categoria;
-      document.getElementById("vendaKit").value = p.kit ? "Sim" : "Não";
+      preencherCamposProduto(p);
+      atualizarTotalItem();
 
-      // Armazenando o ID do produto para usar ao finalizar a venda
-      document.getElementById("produtoId").dataset.produtoId = p.id;  // ID do produto armazenado
     } catch (error) {
       showAlert("Produto não encontrado", "warning");
       console.error("❌ Erro ao buscar produto:", error);
+      limparCamposVenda();
     }
   });
 
-  // 🧮 Evento: atualizar total do item quando a quantidade muda
-  document.getElementById("quantidade")?.addEventListener("input", function () {
-    const qtd = parseInt(this.value) || 0;
-    const preco = parseFloat(document.getElementById("vendaPreco").value.replace(",", ".")) || 0;
-    document.getElementById("totalItem").value = (qtd * preco).toFixed(2);
-  });
+  // Atualizar total do item ao alterar quantidade ou preço
+  $("quantidade")?.addEventListener("input", atualizarTotalItem);
+  $("vendaPreco")?.addEventListener("input", atualizarTotalItem);
 
-  // 🧮 Evento: recalcular total quando o valor unitário for alterado manualmente
-  document.getElementById("vendaPreco")?.addEventListener("input", function () {
-    const preco = parseFloat(this.value.replace(",", ".")) || 0;
-    const qtd = parseInt(document.getElementById("quantidade").value) || 0;
-    document.getElementById("totalItem").value = (qtd * preco).toFixed(2);
-  });
-
-  // ➕ Evento: adicionar item à venda
-  document.getElementById("formVenda")?.addEventListener("submit", function (e) {
+  // Adicionar item à venda
+  $("formVenda")?.addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const produtoId = document.getElementById("produtoId").dataset.produtoId; // Usando o ID do produto
-    const nome = document.getElementById("vendaNome").value;
-    const preco = parseFloat(document.getElementById("vendaPreco").value.replace(",", "."));
-    const qtd = parseInt(document.getElementById("quantidade").value);
-    const total = qtd * preco;
-
-    console.log("🧾 Adicionando item:", { produtoId, nome, preco, qtd, total });
+    const produtoId = $("produtoId").dataset.produtoId;
+    const nome = $("vendaNome").value;
+    const preco = parseFloatSafe($("vendaPreco").value);
+    const qtd = parseIntSafe($("quantidade").value);
 
     if (!produtoId || !qtd || !preco) {
       return showAlert("Preencha todos os campos corretamente.", "warning");
     }
 
+    const total = preco * qtd;
+
     itensVenda.push({ produtoId, quantidade: qtd });
+    adicionarItemTabela({ nome, qtd, preco, total });
 
-    document.getElementById("tabelaItens").innerHTML += `
-      <tr>
-        <td>${nome}</td>
-        <td>${qtd}</td>
-        <td>R$ ${preco.toFixed(2)}</td>
-        <td>R$ ${total.toFixed(2)}</td>
-      </tr>
-    `;
-
-    // Atualiza o total geral da venda
     totalVenda += total;
     totalVendaSpan.innerText = totalVenda.toFixed(2);
-    console.log("💰 Total atualizado:", totalVenda.toFixed(2));
 
-    // Limpa o formulário e os campos de exibição
-    this.reset();
-    ["vendaNome", "vendaPreco", "vendaDescricao", "vendaCategoria", "vendaKit", "totalItem"].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) el.value = "";
-    });
+    console.log("➕ Item adicionado:", { produtoId, nome, preco, qtd, total });
+    limparCamposVenda();
   });
 
-  // ✅ Evento: finalizar venda
-  document.getElementById("finalizarVenda")?.addEventListener("click", async function () {
-    console.log("🛒 Botão 'Finalizar Venda' clicado");
+  // Finalizar venda
+  $("finalizarVenda")?.addEventListener("click", async () => {
+    console.log("🛒 Finalizando venda...");
 
     if (!itensVenda.length) {
       return showAlert("Adicione pelo menos um item antes de finalizar.", "warning");
     }
 
     try {
-      // Enviando o ID do produto (não o código) para registrar a venda
       const res = await fetch(`${API_URL}/api/vendas`, {
         method: "POST",
         headers: {
           ...authenticatedHeaders(),
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({
-          itens: itensVenda.map(item => {
-            return {
-              produtoId: item.produtoId,  // Usando o ID do produto aqui
-              quantidade: item.quantidade
-            };
-          })
-        })
+        body: JSON.stringify({ itens: itensVenda }),
       });
 
       if (!res.ok) {
@@ -141,29 +137,25 @@ export function inicializarVendaAvancada() {
       showAlert(`Venda registrada com sucesso! Total: R$ ${totalVenda.toFixed(2)}`, "success");
       console.log("✅ Venda registrada:", itensVenda);
 
-      // Reset total e interface
+      // Reset
       totalVenda = 0;
+      itensVenda.length = 0;
       totalVendaSpan.innerText = "0.00";
+      $("tabelaItens").innerHTML = "";
+      limparCamposVenda();
 
-      // Recarrega a página após 5 segundos
-      setTimeout(() => {
-        location.reload();
-      }, 5000);
+      setTimeout(() => location.reload(), 5000);
 
     } catch (error) {
       console.error("❌ Erro ao finalizar venda:", error);
       showAlert(error.message, "danger");
 
-      // Limpa a interface mesmo com erro
+      // Reset parcial
       totalVenda = 0;
-      totalVendaSpan.innerText = "0.00";
-      document.getElementById("formVenda").reset();
-      ["vendaNome", "vendaPreco", "vendaDescricao", "vendaCategoria", "vendaKit", "totalItem"].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
-      });
-      document.getElementById("tabelaItens").innerHTML = "";
       itensVenda.length = 0;
+      totalVendaSpan.innerText = "0.00";
+      $("tabelaItens").innerHTML = "";
+      limparCamposVenda();
     }
   });
 }

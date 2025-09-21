@@ -14,7 +14,7 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/funcionarios")
-public class FuncionarioController {
+public class  FuncionarioController {
 
 	@Autowired
 	private FuncionarioRepository funcionarioRepository;
