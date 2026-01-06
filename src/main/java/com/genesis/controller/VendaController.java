@@ -70,7 +70,17 @@ public class VendaController {
         }
 
         venda.setItens(itensVenda);
-        venda.setTotal(totalVenda);
+
+        // 🔹 Aplica desconto global se informado
+        Double desconto = vendaRequest.getDesconto();
+        if (desconto != null && desconto > 0) {
+            double valorDesconto = totalVenda * (desconto / 100);
+            venda.setTotal(totalVenda - valorDesconto);
+            venda.setDesconto(desconto); // opcional: se tiver campo na entidade
+        } else {
+            venda.setTotal(totalVenda);
+        }
+
         venda.setDataVenda(LocalDateTime.now());
 
         Venda vendaSalva = vendaRepo.save(venda);
