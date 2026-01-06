@@ -11,6 +11,7 @@ public class VendaDTO {
     private Long id;
     private LocalDateTime dataVenda;
     private double total;
+    private Double desconto; // 🔹 novo campo para desconto global
     private List<ItemVendaDTO> itens;
 
     // Conversor da entidade para o DTO
@@ -19,6 +20,7 @@ public class VendaDTO {
         dto.setId(venda.getId());
         dto.setDataVenda(venda.getDataVenda());
         dto.setTotal(venda.getTotal());
+        dto.setDesconto(venda.getDesconto()); // 🔹 popula o desconto da entidade
         dto.setItens(venda.getItens().stream()
                 .map(ItemVendaDTO::fromEntity)
                 .collect(Collectors.toList()));
@@ -26,7 +28,6 @@ public class VendaDTO {
     }
 
     // Getters e Setters
-
     public Long getId() {
         return id;
     }
@@ -49,6 +50,14 @@ public class VendaDTO {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public Double getDesconto() {
+        return desconto;
+    }
+
+    public void setDesconto(Double desconto) {
+        this.desconto = desconto;
     }
 
     public List<ItemVendaDTO> getItens() {

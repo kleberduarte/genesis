@@ -45,6 +45,8 @@ function preencherCamposProduto(p) {
 
 export function inicializarVendaAvancada() {
   const totalVendaSpan = $("totalVenda");
+  const descontoInput = $("descontoVenda"); // 👈 captura o campo de desconto global
+
   if (!totalVendaSpan) {
     console.warn("⚠️ Elemento #totalVenda não encontrado. VendaAvancada não será inicializada.");
     return;
@@ -119,6 +121,14 @@ export function inicializarVendaAvancada() {
       return showAlert("Adicione pelo menos um item antes de finalizar.", "warning");
     }
 
+    // aplica desconto global
+    const desconto = parseFloatSafe(descontoInput?.value) || 0;
+    let totalComDesconto = totalVenda;202602
+
+    if (desconto > 0) {
+      totalComDesconto -= totalComDesconto * (desconto / 100);
+    }
+
     try {
       const res = await fetch(`${API_URL}/api/vendas`, {
         method: "POST",
@@ -126,7 +136,7 @@ export function inicializarVendaAvancada() {
           ...authenticatedHeaders(),
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ itens: itensVenda }),
+        body: JSON.stringify({ itens: itensVenda, desconto }), // 👈 envia desconto para backend
       });
 
       if (!res.ok) {
@@ -134,8 +144,8 @@ export function inicializarVendaAvancada() {
         throw new Error(errorData.message || "Erro ao registrar venda.");
       }
 
-      showAlert(`Venda registrada com sucesso! Total: R$ ${totalVenda.toFixed(2)}`, "success");
-      console.log("✅ Venda registrada:", itensVenda);
+      showAlert(`Venda registrada com sucesso! Total: R$ ${totalComDesconto.toFixed(2)}`, "success");
+      console.log("✅ Venda registrada:", { itensVenda, desconto });
 
       // Reset
       totalVenda = 0;
@@ -143,6 +153,7 @@ export function inicializarVendaAvancada() {
       totalVendaSpan.innerText = "0.00";
       $("tabelaItens").innerHTML = "";
       limparCamposVenda();
+      descontoInput.value = "";
 
       setTimeout(() => location.reload(), 5000);
 
@@ -156,6 +167,7 @@ export function inicializarVendaAvancada() {
       totalVendaSpan.innerText = "0.00";
       $("tabelaItens").innerHTML = "";
       limparCamposVenda();
+      descontoInput.value = "";
     }
   });
 }

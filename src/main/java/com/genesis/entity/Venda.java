@@ -2,13 +2,9 @@ package com.genesis.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.PositiveOrZero;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.validation.constraints.NotNull;
 
 @Entity
 public class Venda {
@@ -23,11 +19,14 @@ public class Venda {
     @PositiveOrZero(message = "O total da venda não pode ser negativo")
     private double total;
 
+    // 🔹 Novo campo para desconto global
+    @PositiveOrZero(message = "O desconto não pode ser negativo")
+    private Double desconto;
+
     @OneToMany(mappedBy = "venda", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItemVenda> itens;
 
     // Getters e Setters
-
     public Long getId() {
         return id;
     }
@@ -50,6 +49,14 @@ public class Venda {
 
     public void setTotal(double total) {
         this.total = total;
+    }
+
+    public Double getDesconto() {
+        return desconto;
+    }
+
+    public void setDesconto(Double desconto) {
+        this.desconto = desconto;
     }
 
     public List<ItemVenda> getItens() {
